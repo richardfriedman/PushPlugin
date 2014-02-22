@@ -41,6 +41,7 @@
 		</config-file>
 
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+		
 			<activity android:name="com.plugin.gcm.PushHandlerActivity"/>
 			<receiver android:name="com.plugin.gcm.CordovaGCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
 				<intent-filter>
@@ -50,15 +51,25 @@
 				</intent-filter>
 			</receiver>
 			<service android:name="com.plugin.gcm.GCMIntentService" />
+
+         <receiver android:name="com.parse.GcmBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+               <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+               <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+               <category android:name="$PACKAGE_NAME" />
+            </intent-filter>
+         </receiver>
+         <service android:name="com.parse.PushService" />
+
 		</config-file>
 
 		<source-file src="src/android/libs/gcm.jar" target-dir="libs/" />
+		<source-file src="src/android/libs/Parse-1.4.1.jar" target-dir="libs/" />
 		<source-file src="src/android/com/plugin/gcm/CordovaGCMBroadcastReceiver.java" target-dir="src/com/plugin/gcm/" />
 		<source-file src="src/android/com/plugin/gcm/GCMIntentService.java" target-dir="src/com/plugin/gcm/" />
 		<source-file src="src/android/com/plugin/gcm/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/" />
 		<source-file src="src/android/com/plugin/gcm/PushPlugin.java" target-dir="src/com/plugin/gcm/" />
-		<source-file src="src/android/com/plugin/android-support-v13.jar" target-dir="libs/" />
-		
+		<source-file src="src/android/com/plugin/android-support-v13.jar" target-dir="libs/" />		
 	</platform>
 
 	<!-- ios -->

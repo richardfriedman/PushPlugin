@@ -30,7 +30,8 @@ public class PushPlugin extends CordovaPlugin {
 
 	private static CordovaWebView gWebView;
 	private static String gECB;
-	private static String gSenderID;
+	private static String gParseAppId;
+	private static String gParseClientKey;
 	private static Bundle gCachedExtras = null;
     private static boolean gForeground = false;
 
@@ -60,11 +61,17 @@ public class PushPlugin extends CordovaPlugin {
 				Log.v(TAG, "execute: jo=" + jo.toString());
 
 				gECB = (String) jo.get("ecb");
-				gSenderID = (String) jo.get("senderID");
+				Log.v(TAG, "execute: ECB=" + gECB );
 
-				Log.v(TAG, "execute: ECB=" + gECB + " senderID=" + gSenderID);
+            gParseAppId = (String) jo.get("appid");
+            gParseClientKey = (String) jo.get("clientkey");
+            
+            Log.v(TAG, "Initialize Parse from Activity" );
+            Parse.initialize( getApplicationContext(), gParseAppId, gParseClientKey );
+            
+            Log.v(TAG, "setDefaultPushCallback=");
+            PushService.setDefaultPushCallback( getApplicationContext(), PushHandlerActivity.class);
 
-				GCMRegistrar.register(getApplicationContext(), gSenderID);
 				result = true;
 				callbackContext.success();
 			} catch (JSONException e) {
@@ -81,9 +88,9 @@ public class PushPlugin extends CordovaPlugin {
 			
 		} else if (UNREGISTER.equals(action)) {
 
-			GCMRegistrar.unregister(getApplicationContext());
-
 			Log.v(TAG, "UNREGISTER");
+         PushService.setDefaultPushCallback(getApplicationContext(), null);
+
 			result = true;
 			callbackContext.success();
 		} else {
