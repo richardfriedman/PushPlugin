@@ -82,12 +82,8 @@ public class PushPlugin extends CordovaPlugin {
             _json.put( "installationId", installation.getInstallationId() );
             _json.put( "objectId", installation.getObjectId() );
             
-            // Stringify so we can return it.
-            String _d =  _json.toString();
-            Log.v( TAG, _d );
-            
 				result = true;
-				callbackContext.success( _d );
+				callbackContext.success( _json );
 			} catch (JSONException e) {
 				Log.e(TAG, "execute: Got JSON Exception " + e.getMessage());
 				result = false;
