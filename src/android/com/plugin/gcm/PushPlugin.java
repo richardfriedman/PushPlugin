@@ -16,6 +16,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 
 import com.google.android.gcm.*;
+import com.parse.*;
 
 /**
  * @author awysocki
