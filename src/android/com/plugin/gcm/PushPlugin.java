@@ -73,8 +73,21 @@ public class PushPlugin extends CordovaPlugin {
             Log.v(TAG, "setDefaultPushCallback=");
             PushService.setDefaultPushCallback( getApplicationContext(), PushHandlerActivity.class);
 
+            // Lets get the installation information and pass some of it back
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+
+            // JSonify some of the data            
+            JSONObject _json = new JSONObject();
+            _json.put( "deviceToken", installation.get( "deviceToken" ) );
+            _json.put( "installationId", installation.getInstallationId() );
+            _json.put( "objectId", installation.getObjectId() );
+            
+            // Stringify so we can return it.
+            String _d =  _json.toString();
+            Log.v( TAG, _d );
+            
 				result = true;
-				callbackContext.success();
+				callbackContext.success( _d );
 			} catch (JSONException e) {
 				Log.e(TAG, "execute: Got JSON Exception " + e.getMessage());
 				result = false;
