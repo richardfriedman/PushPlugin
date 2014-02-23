@@ -99,7 +99,7 @@ public class PushPlugin extends CordovaPlugin {
 		} else if (UNREGISTER.equals(action)) {
 
 			Log.v(TAG, "UNREGISTER");
-         PushService.setDefaultPushCallback(getApplicationContext(), null);
+			PushService.setDefaultPushCallback(getApplicationContext(), null);
 
 			result = true;
 			callbackContext.success();
@@ -258,5 +258,19 @@ public class PushPlugin extends CordovaPlugin {
     public static boolean isActive()
     {
     	return gWebView != null;
+    }
+    
+    public static Bundle getExtras() 
+    { 
+    	Log.v(TAG, "getExtras!");
+    	Bundle extras = gCachedExtras;
+    	gCachedExtras = null;
+    	return extras;
+    }
+    
+    public static void setExtras( Bundle extras ) 
+    { 
+    	Log.v(TAG, "setExtras!");
+    	gCachedExtras = extras;
     }
 }

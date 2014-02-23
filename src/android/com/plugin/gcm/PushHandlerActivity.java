@@ -40,15 +40,20 @@ public class PushHandlerActivity extends Activity
 	 */
 	private void processPushBundle(boolean isPushPluginActive)
 	{
-		Log.v(TAG, "processPushBundle");
+		Log.v(TAG, "processPushBundle");		
+		
 		Bundle extras = getIntent().getBundleExtra("pushBundle");
-
+		if ( extras == null ) { 
+			extras = PushPlugin.getExtras();
+		}
+		
 		if (extras != null)	{
-		            
-            extras.putBoolean("foreground", false);
-            extras.putBoolean("coldstart", !isPushPluginActive);
+			extras.putBoolean("foreground", false);
+			extras.putBoolean("coldstart", !isPushPluginActive);
 
 			PushPlugin.sendExtras(extras);
+		} else { 
+			Log.v(TAG, "FAILED to SEND PushPlugin.sendExtras"); 
 		}
 	}
 

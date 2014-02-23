@@ -1,5 +1,6 @@
 package com.plugin.gcm;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.android.gcm.GCMBaseIntentService;
@@ -67,20 +68,51 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Bundle extras = intent.getExtras();
 		if (extras != null)
 		{
+			// Convert any open string that is JSON to items in the bundle. 
+			for (String extraKey : extras.keySet()) {
+			    Object value = extras.get(extraKey);
+			    if ( value instanceof String ) { 
+					String strValue = (String)value;
+					if (strValue.startsWith("{")) {
+						try {
+							JSONObject json2 = new JSONObject(strValue);
+							Iterator<?> keys = json2.keys();
+					        while( keys.hasNext() ){
+					            String key = (String)keys.next();
+					            if( json2.get(key) instanceof String ){
+					            	intent.putExtra( key, json2.getString(key) );
+					            } else if( json2.get(key) instanceof Boolean ){
+					            	intent.putExtra( key, json2.getBoolean(key) );
+					            } else if( json2.get(key) instanceof Integer ){
+					            	intent.putExtra( key, json2.getInt(key) );
+					            }
+					        }
+					        intent.removeExtra( extraKey );
+						}
+						catch (Exception e) {
+							// Ignore and move on.
+						}
+					}
+			    }
+			}
+			
 			// if we are in the foreground, just surface the payload, else post it to the statusbar
             if (PushPlugin.isInForeground()) {
 				extras.putBoolean("foreground", true);
                 PushPlugin.sendExtras(extras);
-			}
-			else {
-				extras.putBoolean("foreground", false);
+			} else {
+				Log.d(TAG, "onMessage - context: in the background" );
+				intent.putExtra("foreground", false);
 
-                // Send a notification if there is a message
+                // Send a secondary notification if there is a message
                 if (extras.getString("message") != null && extras.getString("message").length() != 0) {
                     createNotification(context, extras);
                 }
+                
+                intent.putExtra("pushBundle", extras );
+                PushPlugin.setExtras(extras);
             }
-        }
+        } else { Log.d(TAG, "onMessage - context: but no extras!!!" ); }
 	}
 
 	public void createNotification(Context context, Bundle extras)
@@ -106,9 +138,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		String message = extras.getString("message");
 		if (message != null) {
 			mBuilder.setContentText(message);
-		} else {
-			mBuilder.setContentText("<missing message content>");
-		}
+		} 
 
 		String msgcnt = extras.getString("msgcnt");
 		if (msgcnt != null) {
